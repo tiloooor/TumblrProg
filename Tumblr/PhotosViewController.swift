@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AlamofireImage
 
 class PhotosViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
@@ -22,7 +23,20 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
         let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoCell", for: indexPath) as! PhotosTableViewCell
         cell.textLabel?.text = "This is row \(indexPath.row)"
         
+        let post = posts[indexPath.row]
+        
+        if let photos = post["photos"] as? [[String: Any]] {
+            let photo = photos[0]
+            let originalSize = photo["original_size"] as! [String: Any]
+            let urlString = originalSize["url"] as! String
+            let url = URL(string: urlString)
+            cell.PhotosView.af_setImage(withURL: url!)
+            
+        }
+
+        
         return cell
+        
     }
     
 
@@ -49,6 +63,7 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
                 let responseDictionary = dataDictionary["response"] as! [String: Any]
                 // Store the returned array of dictionaries in our posts property
                 self.posts = responseDictionary["posts"] as! [[String: Any]]
+                self.MainTable.reloadData()
 
                 // TODO: Get the posts and store in posts property
                 
